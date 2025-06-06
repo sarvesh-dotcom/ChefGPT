@@ -10,38 +10,34 @@ markdown to make it easier to render to a web page`;
 exports.handler = async function(event) {
   try {
     const HF_ACCESS_TOKEN = process.env.HF_ACCESS_TOKEN;
+    console.log("HF_ACCESS_TOKEN:", process.env.HF_ACCESS_TOKEN);
 
     if (!HF_ACCESS_TOKEN) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "Missing HF_ACCESS_TOKEN environment variable" }),
-      };
+      throw new Error("Missing HF_ACCESS_TOKEN");
     }
 
     const hf = new InferenceClient(HF_ACCESS_TOKEN);
-
-    // Parse ingredients from POST request body
     const { ingredients } = JSON.parse(event.body);
-    const ingredientsString = ingredients.join(', ');
+    const ingredientsString = ingredients.join(", ");
 
     const response = await hf.chatCompletion({
       model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `I have ${ingredientsString}. Please give me a recipe you'd recommend I make!` },
+        { role: "user", content: `I have ${ingredientsString}. Please give me a recipe!` }
       ],
-      max_tokens: 1024,
+      max_tokens: 1024
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ recipe: response.choices[0].message.content }),
+      body: JSON.stringify({ recipe: response.choices[0].message.content })
     };
-
   } catch (error) {
+    console.error("Function error:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ error: error.message })
     };
   }
 };

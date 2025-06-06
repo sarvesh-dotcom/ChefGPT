@@ -1,14 +1,17 @@
 export async function getRecipeFromMistral(ingredientsArr) {
-  const response = await fetch('/.netlify/functions/getRecipe', {
+  const res = await fetch('/.netlify/functions/getRecipe', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ingredients: ingredientsArr }),
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ ingredients: ingredientsArr })
   });
 
-  if (!response.ok) {
-    throw new Error(`Server error: ${response.statusText}`);
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(`Server error: ${err.error}`);
   }
 
-  const data = await response.json();
+  const data = await res.json();
   return data.recipe;
 }
