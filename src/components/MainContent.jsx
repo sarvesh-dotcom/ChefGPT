@@ -20,7 +20,9 @@ export default function Main() {
 
     function addIngredient(formData) {
         const newIngredient = formData.get("ingredient")
-        setIngredients(prevIngredients => [...prevIngredients, newIngredient])
+        if (newIngredient === "") alert("Please enter an ingredient")
+        else setIngredients(prevIngredients => [...prevIngredients, newIngredient])
+
     }
 
     
